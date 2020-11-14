@@ -142,5 +142,230 @@ Puedes seguir las guías de instalación de docker en linux dependiendo de tu di
   Debian: https://docs.docker.com/engine/install/debian/
   Fedora: https://docs.docker.com/engine/install/fedora/
   Ubuntu: https://docs.docker.com/engine/install/ubuntu/
+
+
+
+*** PRIMEROS PASOS DE CONTENEDOR - HOLA MUNDO ***
+
+--> comando
+  docker run <nombre del contenedor a crear>
+    --> ejemplo docker run hello-world
+
+aportes de la clase
+
+- Levantando contenedores
+🔹 Arrancar un contenedor.
+
+docker run <image_container>
+Ejemplo:
+
+docker run hello-world
+🔹 Arrancar un contenedor asignándole un nombre.
+
+docker run --name <name_container> <image_container>
+Ejemplo:
+
+docker run --name contenedor_test ubuntu
+🔹 Arrancar un contenedor con una terminal interactiva. Pasándole una shell para acceder al contenedor.
+
+docker run -it <image_container> <shell>
+Ejemplo:
+
+docker run -it ubuntu bash
+🔹 Arrancar un contenedor. Mapeando un puerto del host a un puerto del contenedor.
+
+puerto_host : puerto_contenedor
+docker run -p <host_port>:<container_port> <image_container>
+Ejemplo:
+
+docker run -p 8080:80 nginx
+Igual que el ejemplo anterior pero dejándolo en segundo plano.
+
+docker run -p 8080:80 -d nginx
+🔹 Arrancar un contenedor. Que tras terminar su periodo de vida. Será eliminado automáticamente.
+
+docker run --rm <image_container>
+Ejemplo:
+
+docker run -p 8080:80 -d --rm nginx
+🔹 Arrancar un contenedor con un volume.
+
+docker run -v <volume_name>:<mount_point>:<options> <image_container>
+Ejemplo:
+
+Volume -> test
+Punto de montaje en el contenedor -> /apps
+Opciones -> rw (Lectura y escritura)
+docker run -v test:/apps:rw nginx
+🔹 Arrancar un contenedor con un bind mount.
+
+docker run -v <shared_folder>:<mount_point>:<options> <image_container>
+Ejemplo:
+
+Ruta del host a compartir -> /home/application
+Punto de montaje en el contenedor -> /apps
+Opciones -> ro (Solo lectura)
+docker run -v /home/application:/apps:ro ubuntu
+🔹 Arrancar un contenedor con tmpfs.
+
+docker run \
+--mount type=tmpfs,destination=<mount_point>,tmpfs-mode=<permisos>,tmpfs-size=<bytes_size> \
+<image_container>
+Ejemplo:
+
+Punto de montaje en el contenedor -> /temporal
+Permisos -> Todos los permisos solo para el propietario.
+Tamaño del FS -> 21474836480 bytes = 20G
+docker run \
+--mount type=tmpfs,destination=/temporal,tmpfs-mode=700,tmpfs-size=21474836480 \
+nginx
+- Listando contenedores
+🔹 Lista de los contenedores activos.
+
+docker ps
+🔹 Lista de todos los contenedores activos e inactivos del sistema.
+
+docker ps -a
+🔹 Lista los ID de todos los contenedores.
+
+docker ps -aq
+- Debugging
+🔹 Inspeccionar la data de un contenedor.
+
+Por su ID:
+docker inspect <id_container>
+Por su nombre:
+docker inspect <name_container>
+Aplicando filtros. Por ejemplo buscando las variables de entorno:
+docker inspect -f '{{ json .Config.Env }}' <name_container>
+🔹 Ver los logs del contenedor.
+
+docker logs <name_container>
+- Eliminando contenedores
+🔹 Eliminar un contenedor que no este arriba.
+
+Se puede hacer tanto por nombre como por ID.
+docker rm <name_container>
+🔹 Eliminar un contenedor aunque este arriba. Forzándolo.
+
+Se puede hacer tanto por nombre como por ID.
+docker rm -f <id_container>
+🔹 Eliminar todos los contenedores que no esten arriba a la vez.
+
+docker rm $(docker ps -aq)
    
-   
+
+
+*** CONCEPTO FUNDAMENTALES DE DOCKER - CONTENEDORES ***
+
+Docker es una herramienta de codigo abierto que nos sirve para desarrollar, enviar y ejecutar
+aplicaciones en contenedores
+
+que son los contenedores?
+  son unidades logicas computadas por un conjunto de procesos
+  los contenedores surgieron con la union de varias tecnologias como
+    namespaces
+    cgroups
+    chroot
+
+Docker por dentro
+
+mediante el cliente podremos enviar comandos al docker deamon para interactuar con los contenedors
+  docker deamon recibe los comandos y envia ordenes a los contenedores para indicarles como y que deben ejecutar
+
+contenedores
+  ejecutan los proceso indicados por el docker deamon
+  estos procesos viven en el contenedor y mueren con el contenedor, esto hace que se mantengan
+  asilados de los proceso que se mantengan aislados de los procesos que corren en el sistma operativo del host
+
+aunque puedes usar Docker tanto en windows como MacOs. este solo corre nativamente en Linux
+
+
+Por que usar Docker?
+
+  "en mi equipo la app corria correctamente"
+  evita fallos gracias a que podras tener entornos de desarrollo y de produccion practicamente iguales
+  
+  "Evita problemas con las versiones"
+  en cada contenedor podras correr lo que necesites
+  
+  "Distribuye y comparte facilmente"
+  una de las grandes ventajas de los contenedores es su pequeño tamaño. imagina tener un Linuz en tan solo 5MB con Docker es posible
+  
+
+Que es un contenedor ?
+
+  Es una agrupación de procesos.
+  Es una entidad lógica, no tiene el limite estricto de las máquinas virtuales, emulación del sistema operativo simulado por otra más abajo.
+  Ejecuta sus procesos de forma nativa.
+  Los procesos que se ejecutan adentro de los contenedores ven su universo como el contenedor lo define, no pueden ver mas allá del contenedor, a pesar de estar corriendo en una maquina más grande.
+  No tienen forma de consumir más recursos que los que se les permite. Si esta restringido en memoria ram por ejemplo, es la única que pueden usar.
+  A fines prácticos los podemos imaginar cómo maquinas virtuales, pero NO lo son. Máquinas virtuales livianas.
+  Docker corre de forma nativa solo en Linux.
+  Sector del disco: Cuando un contenedor es ejecutado, el daemon de docker le dice, a partir de acá para arriba este disco es tuyo, pero no puedes subir mas arriba.
+  Docker hace que los procesos adentro de un contenedor este aislados del resto del sistema, no le permite ver más allá.
+  Cada contenedor tiene un ID único, también tiene un nombre.
+
+
+
+*** COMPRENDIENDO DOCKER ***
+
+Comandos:
+
+  $ docker run hello-world (corro el contenedor hello-world)
+  $ docker ps (muestra los contenedores activos)
+  $ docker ps -a (muestra todos los contenedores)
+  $ docker inspect <containe ID> (muestra el detalle completo de un contenedor)
+  $ docker inspect <name> (igual que el anterior pero invocado con el nombre)
+  $ docker run –-name hello-platzi hello-world (le asigno un nombre custom “hello-platzi”)
+  $ docker rename hello-platzi hola-platzy (cambio el nombre de hello-platzi a hola-platzi)
+  $ docker rm <ID o nombre> (borro un contenedor)
+  $ docker container prune (borro todos lo contenedores que esten parados)
+
+
+
+*** EL MODO INTERACTIVO - CORRER UN LINUX UBUNTU CON DOCKER  ***
+
+comando
+--> docker run ubuntu
+--> docker run -it ubuntu  (el comando it significa iterativo, podemos entrar a la maquina de ubuntu y navegar entre sus archivos)
+
+Comandos:
+$ docker run ubuntu (corre un ubuntu pero lo deja apagado)
+$ docker ps -a (lista todos los contenedores)
+$ docker -it ubuntu (lo corre y entro al shell de ubuntu)
+-i: interactivo
+-t: abre la consola
+  --> cat /etc/lsb-release (veo la versión de Linux)
+
+
+With an Existing container
+
+1. start the container
+    --> docker start id-container
+2. execute interactively bash in the container
+    --> docker exec -it id-container bash 
+
+
+
+*** CICLO DE VIDA DE UN CONTENEDOR  ***
+
+comando
+  --> $ docker run --name alwaysup -d ubuntu tail -f /dev/null
+  
+  observaciones
+    se pueden usar al final del tail -f las siguientes instrucciones para que no se apague el contenedor
+      /dev/full
+      /dev/zero
+      /dev/random
+      
+  --> $ docker exec -it alwaysup bash
+  
+  --> $ docker inspect --format '{{.State.Pid}}' alwaysup
+      --> 3744
+      --> $ kill 3744
+          bash: kill: (3744) - No such process (no corre en windows)
+      
+          Para detener procesos en windows usamos el siguiente comando
+          --> $ docker stop alwaysup
+
