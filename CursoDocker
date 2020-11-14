@@ -1,1 +1,146 @@
-CursoDocker
+------------------------------------------------
+------------------------------------------------
+Curso Docker Platzi
+------------------------------------------------
+------------------------------------------------
+
+Docker
+  Estandar para desarrollar, distribuir y ejecutar aplicaciones a nivel productivo
+
+Por que?
+  compatibilidad del software en los ambientes de desarrollo y produccion
+  genera confianza, desplegar en otros entornos
+  
+
+*** LAS TRES AREAS EN EL DESARROLLO DE SOFTWARE PROFESIONAL ***
+  
+  1. construir
+  
+    escribir codigo es una pequeña parte
+    los problemas complejos necesitan equipos
+      --> entornos de desarrollo
+      --> dependencias
+      --> entonrno de ejecucion
+      --> equivalenias con entorno productivo
+      --> servicios externos
+    
+  2. distribuir
+  
+    tu codigo tiene que transformarse en un artefacto o varios que puedan ser transformados
+    a donde tenga que ser ejecutados
+      --> divergencia de repositorios
+      --> divergencia de artefactos
+      --> versionado
+      
+  3. ejecutar
+  
+    la maquina donde se escribe el softare siempre es distinta a la maquina donde se ejecuta de manera productiva
+      --> compatibilidad con el entorno productivo
+      --> dependencias
+      --> disponibilidad de servicios externos
+      --> recursos de hardware
+ 
+
+Aportes de la clase
+
+Resumen de la clase:
+
+“Docker te permite construir, distribuir y ejecutar cualquier aplicación en cualquier lado.”
+
+Problemáticas del desarrollo de software
+1. Construir - Escribir código en la máquina del desarrollador. (Compile, que no compile, arreglar el bug, compartir código, etc. )
+
+Problemática:
+  Entorno de desarrollo (paquetes)
+  Dependencias (Frameworks, bibliotecas)
+  Versiones de entornos de ejecución (runtime, versión Node)
+  Equivalencia de entornos de desarrollo (compartir el código)
+  Equivalencia con entornos productivos (pasar a producción)
+  Servicios externos (integración con otros servicios ejem: base de datos)
+  
+2. Distribuir - Llevar la aplicación donde se va a desplegar (Transformarse en un artefacto)
+
+Problemática:
+  Output de build heterogeo (múltiples compilaciones)
+  Acceso a servidores productivos (No tenemos acceso al servidor)
+  Ejecución nativa vs virtualizada
+  Entornos Serverless
+
+3. Ejecutar - Implementar la solución en el ambiente de producción (Subir a producción)
+  El reto Hacer que funcione como debería funcionar
+
+Problemática:
+  Dependencia de aplicación (paquetes, runtime)
+  Compatibilidad con el entorno productivo (sistema operativo poco amigable con la solución)
+  Disponibilidad de servicios externos (Acceso a los servicios externos)
+  Recursos de hardware (Capacidad de ejecución - Menos memoria, procesador más debil)
+      
+
+
+***  VIRTUALIZACION ***
+
+version virtual de algun recurso tecnologico como (...) hardware, un sistema operativo, un dispositivo de almacenamiento o recurso de red
+  
+  permite atacar en simulateno os tres problemas del desarrollo de software profesional
+
+Maquinas virtuales
+
+  Problemas de las VMs
+  
+    Peso
+      --> en el orden de los GB repiten archivos comunes, inicio lento
+
+    Costos de administracion
+      --> necesita mantenimiento igual que cualquier otra computadora
+      
+    Multiples de formatos
+      --> VDI, VMDK, VHD, raw entre otras
+      
+para solucionar el tema de las maquinas virtuales se crearon los Contenedores
+
+  Objetivo
+    el empleo de contenedores para contruir y desplegar software
+      --> flexibles
+      --> livianos
+      --> portables
+      --> Bajo acoplamiento
+      --> Escalables
+      --> Seguros
+  
+Aporte de la clase
+
+Un contenedor la unidad logica mas importande de docker que permite encapsular las dependencias de un proyecto en un entorno aislado, 
+y pasársela a tus compañeros o colocarlo en un servidor para el despliegue de manera fácil.
+
+¡Alerta! Puedes ver a un contendor como una maquina virtual pero eso no significa que lo sea, una maquina virtual puede llegar a se muy similar debido a sus funcionalidades 
+como el aislamiento de procesos.
+
+Entonces… ¿cuál es el beneficio de usar contenedores en lugar de maquinas virtuales?
+
+El mayor beneficio es que los contenedores de Docker están en el nivel de los MB eso nos da ventajas en el consumo de recursos, ya que estos corren compartiendo el host del 
+kernel de Linux, por otro lado las maquinas virtuales son un sistema operativo(O.S) con sus propias apps que corre sobre el tuyo usando virtualizacion y que consume muchos 
+recursos en el nivel de los GB. Una mejor forma de ver esto es observando la arquitectura de los contendores y de las maquinas virtuales
+
+
+
+*** PREPARANDO TU ENTORNO DE TRABAJO ***
+
+pagina web --> docker.com
+  Doccker desktop
+  Docker Hub
+  Play with Docker
+  
+para maquinas windows menores a 10
+  --> https://github.com/docker/toolbox/releases
+windows 10
+  --> 
+  
+aportes de la clase
+
+Puedes seguir las guías de instalación de docker en linux dependiendo de tu distribución.
+  Cent OS: https://docs.docker.com/engine/install/centos/
+  Debian: https://docs.docker.com/engine/install/debian/
+  Fedora: https://docs.docker.com/engine/install/fedora/
+  Ubuntu: https://docs.docker.com/engine/install/ubuntu/
+   
+   
