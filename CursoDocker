@@ -369,3 +369,92 @@ comando
           Para detener procesos en windows usamos el siguiente comando
           --> $ docker stop alwaysup
 
+
+
+***  EXPONIENDO CONTENEDORES ***
+
+Comandos:
+
+$ docker run -d --name proxy nginx (corro un nginx)
+$ docker stop proxy (apaga el contenedor)
+$ docker rm proxy (borro el contenedor)
+$ docker rm -f <contenedor> (lo para y lo borra)
+
+$ docker run -d --name proxy -p 8080:80 nginx (corro un nginx y expongo el puerto 80 del contenedor en el puerto 8080 de mi máquina)
+  --> docker run -d --name [name] -p [HostPort/8080]:[ContainerPort/80] [imagen/nginx]
+
+localhost:8080 (desde mi navegador compruebo que funcione)
+$ docker logs proxy (veo los logs)
+$ docker logs -f proxy (hago un follow del log)
+$ docker logs --tail 10 -f proxy (veo y sigo solo las 10 últimas entradas del log)
+
+
+
+*** BIND MOUNTS  ***
+
+Todo lo que se ve en esta clase está relacionado con volúmenes y como ya se dijo en clases anteriores Docker es virtualización de sistemas encontramos 
+también volúmenes que son algo así como discos duros o datos que los contenedores pueden usar
+
+Hay varios tipos de volúmenes
+
+--> Container --> (bind mount)  --> filesystem 
+              --> (Volume)      --> [docker area] 
+              --> tmpfs mount   ----------------------> Memory
+
+Para diferentes usos pero siempre se usan para persistir datos como por ejemplo imagina que estás haciendo una app que usa postgres sin importar 
+la tecnología que usas para la lógica (node, python, php, java, c#) puedes tener muchas instancias de postgres en muchas versiones y los datos no se perderán 
+a menos que los elimines
+
+--> https://docs.docker.com/storage/volumes/
+
+Para W10
+usaré este tutorial para lo que me comentaste sobre WSL2:
+https://platzi.com/tutoriales/1650-prework/5895-aprende-a-instalar-wsl-2-de-la-manera-sencilla/
+y luego haré lo que me comentas 😃
+
+Comandos:
+
+$ mkdir dockerdata (creo un directorio en mi máquina)
+$ docker run -d --name db mongo
+$ docker ps (veo los contenedores activos)
+$ docker exec -it db bash (entro al bash del contenedor)
+$ mongo (me conecto a la BBDD)
+
+    shows dbs (listo las BBDD)
+    use platzi ( creo la BBDD platzi)
+    db.users.insert({"nombre":"walther"}) (inserto un nuevo dato)
+    db.users.find() (veo el dato que cargué)
+    $ docker run -d --name db -v <path de mi maquina>:<path dentro del contenedor(/data/db mongo)> (corro un contenedor de mongo y creo un bind mount)
+
+
+
+*** VOLUMENES  ***
+
+Manera mas estandar en manejar la informacion de los dockers
+Fueron una evolucion para manejar datos, 
+mejora la seguridad de la informacion cuando se guarda los datos en disco
+solo los volumenes pueden acceder a los datos creados desde esta opcion
+por bind-mount cualquiera con acceso al disco podria manipular los datos
+
+Comandos volumenes
+
+--> docker volume ls (lista todos los volumenes creados)
+--> docker volume create [nombre de la bd]
+--> docker run -d --name db --mount src=dbdata,dst=/data/db mongo (ruta destino donde mongo db guarda su bd)
+
+
+
+*** INSERTS Y EXTRAER ARCHIVOS DE UN CONTENEDOR  ***
+
+Comandos:
+
+$ touch prueba.txt (creo un archivo en mi máquina)
+$ docker run -d --name copytest ubuntu tail -f /dev/null (corron un ubuntu y le agrego el tail para que quede activo)
+$ docker exec -it copytest bash (entro al contenedor)
+$ mkdir testing (creo un directorio en el contenedor)
+$ docker cp prueba.txt copytest:/testing/test.txt (copio el archivo dentro del contenedor)
+$ docker cp copytest:/testing localtesting (copio el directorio de un contenedor a mi máquina)
+con “docker cp” no hace falta que el contenedor esté corriendo
+
+
+
