@@ -454,7 +454,106 @@ $ docker exec -it copytest bash (entro al contenedor)
 $ mkdir testing (creo un directorio en el contenedor)
 $ docker cp prueba.txt copytest:/testing/test.txt (copio el archivo dentro del contenedor)
 $ docker cp copytest:/testing localtesting (copio el directorio de un contenedor a mi máquina)
-con “docker cp” no hace falta que el contenedor esté corriendo
+con "docker cp" no hace falta que el contenedor esté corriendo
+
+HOST
+
+  Container   -->   Bind mount    --> Filesystem 
+              ----------------------> [Docker Area]   
+              ----- tmpts mount -----------------------> Memory
+
+Host        --> Donde Docker esta instalado
+Bind Mount  --> Guarda los archivos en la maquina local persistiendoy visualizando estos datos (No seguro)
+Volumen     --> Guarda los archivos en el area de Docker donde Docker los administra (Seguro) 
+TMPFS Mount --> Guarda los archivos temporales y persisten los datos en la memoria del contenedor, cuando muera sus datos mueren con el contenedor
+
+
+Acerca de el comando tail
+-------------------------
+Por default, éste comando imprime las últimas 10 líneas de un archivo en el sistema operativo GNU/Linux y luego termina.
+al pasarle -f, indicamos que se “vigilen” los cambios en el archivo que le pasemos.
+
+Acerca de /dev/null
+
+Se le conoce como una “caja negra” que no contiene ni hace nada.
+para entender mejor el uso de éste fichero podemos analizar los siguientes casos:
+Si ejecutamos el comando
+
+- -> cat /dev/null
+
+No se producirá salida o mensaje
+
+Por lo cual es normalmente utilizado para recibir archivos basura (descartables), o para vaciar archivos mediante redirección:
+
+  --> ls > /dev/null
+
+Manda la lista de archivos de ls a el archivo /dev/null, con lo cual dicha lista desaparece.
+
+Si ejecutamos la siguiente orden:
+
+  --> cat /dev/null  > Archivo.Awk
+
+Estaríamos borrando el contenido de Archivo.Awk, es decir, dejándolo vacío.
+
+Como nota final, cabe aclarar que no es posible copiar o mover archivos hacia /dev/null
+
+Práctica realizada:
+
+Para crear un archivo en mi máquina:
+
+  --> touch prueba.txt
+
+Crear un contenedor llamado copytest, que corra ubuntu e iniciar un proceso que se mantenga activo:
+
+  --> docker run -d --name copytest ubuntu tail -f /dev/null
+
+Iniciar una conexión de terminal con el contenedor que está corriendo ubuntu
+
+docker exec -it copytest bash
+
+Creamos un directorio llamado testing en el contenedor de ubuntu
+
+  --> mkdir testing
+
+Comando docker para copiar un fichero o un directorio desde la máquina anfitrión hacia el contenedor, copytest es el nombre del contenedor hacia el cual queremos copiar el archivo
+
+  --> docker cp prueba.txt copytest:/testing/test.txt
+
+Comando para ejecutar la acción inversa, es decir, copiar fichero o directorio desde el contenedor hacia la máquina anfitrión.
+donde localtesting será el nombre de un nuevo directorio que se creará en la máquina anfitrión dentro del directorio en el que nos encontremos al momento de haber ejecutado el siguiente comando:
+
+  -->  docker cp copytest:/testing localtesting 
+
+Nota: utilizando docker cp, no es necesario que el contenedor esté corriendo
+
+
+
+*** CONCEPTOS FUNDAMENTALES DE DOCKER: IMAGENES  ***
+
+
+las imagenes son como Docker intenta solucionar el tema de cosntruccion y distribucion de software
+plantillas o modles de las cuales docker crea contenedores
+empaquetados para que docker pueda ejecutarse
+  --> configuracion
+  --> librerias
+  --> archivos
+
+Comandos:
+
+  --> docker image ls (veo las imágenes que tengo localmente)
+  --> docker pull <image_name>:<tag_version>
+      ejemplo:  docker pull ubuntu:20.04 (bajo la imagen de ubuntu con una versión específica)
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
 
 
 
