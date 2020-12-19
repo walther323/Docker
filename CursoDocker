@@ -573,5 +573,74 @@ RUN touch /ust/src/hola-platzi.txt (comando a ejecutar en tiempo de build)
 
 *** EL SISTEMA DE CAPAS ***
 
+Comandos:
+
+--> docker history ubuntu:platzi (veo la info de como se construyó cada capa)
+
+el comando anterior no es muy comoda para revisar las configuraciones, para 
+esto es la el comando siguiente
+
+instalar dive
+
+--> wget https://github.com/wagoodman/dive/releases/download/v0.9.2/dive_0.9.2_linux_amd64.deb
+sudo apt install ./dive_0.9.2_linux_amd64.deb
+
+de esta forma ya podremos ejecutar la siguiente imagen
+
+--> dive ubuntu:platzi (veo la info de la imagen con el programa dive)
+
+La importancia de entender el sistema de capas consiste en la optimización de la construcción del contenedor para reducir espacio ya que cada comando 
+en el dockerfile crea una capa extra de código en la imagen.
+
+Agregando Capas
+Con docker commit se crea una nueva imagen con una capa adicional que modifica la capa base.
+
+Ejemplo: crear una nueva imagen a partir de la imagen de Ubuntu.
+
+--> docker pull ubuntu
+
+docker images
+--> docker run -it cf0f3ca922e0 bin/bash
+
+(modificar el contenedor: Ej apt-get install nmap)
+-->docker commit deddd39fa163 ubuntu-nmap
+
+
+
+*** USANDO DOCKER PARA DESARROLLAR APLICACIONES ***
+
+Comandos:
+
+--> git clone https://github.com/platzi/docker
+--> docker build platziapp . (creo la imagen local)
+--> docker image ls (listo las imagenes locales)
+--> docker run --rm -p 3000:3000 platziapp (creo el contenedor y cuando se detenga se borra, lo publica el puerto 3000)
+--> docker ps (veo los contenedores activos)
+
+explicacion del archivo descargado
+
+#imagen base node en la version 12
+FROM node:12
+
+#copiar todo lo que hay en la carpeta actual a la carpeta /usr/src/ en el contenedor
+COPY [".", "/usr/src/"]
+
+#establecer el directorio de trabajo cd /usr/src
+WORKDIR /usr/src
+
+#descargar las dependencias del proyecto
+RUN npm install
+
+#le dice al contenedor que este escuchando en este puerto
+EXPOSE 3000
+
+#correr el comando node index.js
+CMD ["node", "index.js"]
+
+
+
+*** APROVECHANDO EL CACHE DE CAPAS PARA ESTRUCTURAR CORRECTAMENTE TUS IMAGENES ***
+
+
 
 
