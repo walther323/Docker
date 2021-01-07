@@ -675,3 +675,103 @@ CMD ["npx", "nodemon", "index.js"]
 
 *** DOCKER NETWORKING: COLABOACION ENTRE CONTENEDORES ***
 
+Comandos:
+--> docker network ls (listo las redes)
+--> docker network create --atachable plazinet (creo la red)
+--> docker inspect plazinet (veo toda la definición de la red creada)
+--> docker run -d --name db mongo (creo el contenedor de la BBDD)
+--> docker network connect plazinet db (conecto el contenedor “db” a la red “platzinet”)
+--> docker run -d -name app -p 3000:3000 --env MONGO_URL=mondodb://db:27017/test platzi (corro el contenedor “app” y le paso una variable)
+--> docker network connect plazinet app (conecto el contenedor “app” a la red “plazinet”)
+
+comandos citados previamente
+
+--> docker network ls (listo las redes)
+--> docker network create --attachable <name_red> (creo la red y permitimos que otros contenedores accedan a ella “attachable”)
+--> docker inspect <name_red> (veo toda la definición de la red creada)
+--> docker run -d --name <name_container> mongo (creo el contenedor de la BD)
+--> docker network connect <name_red> <name_container> (conecto la red “name_red” al contenedor de la bd “name_container”)
+--> docker run -d --name <name_container> -p 3000:3000 --env MONGO_URL=mongodb://db:27017/test <name_image> (corro un contenedor nuevo “<name_container> ”, le paso una variable de entorno ”- -env” y el nombre de la imagen a la que le quiero asignar este nuevo contenedor“<name_image>”)
+--> docker network connect <name_red> <name_container> (conecto la red “<name_red>” al contenedor que se asigno a la imagen“<name_container>”)
+
+
+
+*** DOCKER COMPOSE: LA HERRAMIENTA TODO EN UNO ***
+
+"describir de forma declarativa la arquitectura de servicios que nuestra aplicacione necesita,en un archivo donde declaramos lo que queremos que pase y 
+docker por detras se encarga de ejecutar todos estos pasos que antes ejeuctabamos manualmente".
+
+
+instalar docker-compose en Linux
+
+1) sudo curl -L "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+2) sudo chmod +x /usr/local/bin/docker-compose
+3) docker-compose --version
+    Resultado:  docker-compose version 1.27.4, build 1110ad01
+
+
+estructura del archivo docker-compose.yml
+
+
+Observacion:
+el tabulado en compose es fundamental
+
+
+//-- start file
+
+//version del compose file
+version: "3.8"
+
+//los servicios que component la aplicacion
+//multiples servicios - microservicios
+//se detallan los contenedores que funcionaran
+services:
+
+  //los servicios que correran nuestra apliccion
+  app:
+  
+    //todo contenedor nace de una imagen <image>
+    image: platziapp
+    
+    //definir las variables de entorno
+    environment:
+      MONGO_URL: "mongodb://db:27017/test"
+      
+    //este contenedor va a depender de otro
+    depends_on:
+      - db
+      
+    //exponer el puerto del contenedor
+    ports:
+      - "3000:3000"
+      
+  //la base de datos que se conectara la aplicacion
+  db:
+    image: mongo
+
+// end file
+
+
+para ejecutar el archivo .YML vamos a la ruta donde esta el proyecto y ejecutamos el siguiente comando
+--> docker compose up
+el sistema creara la red, creara las imagenes y las conectara
+el anterior comando levantara el servicio pero al darle CTRL + C terminara el proceso
+
+para que se ejecute el contenedor por compose y quede corriendo por debajo escribimos
+--> docker-compose up -d 
+
+como bajar los servicios
+--> docker-compose down
+
+
+
+*** SUBCOMANDOS DE DOCKER COMPOSE ***
+
+
+
+
+
+
+
+
+
