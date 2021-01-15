@@ -859,8 +859,41 @@ CMD ["node", "index.js"]
 
 *** COMPOSE EN EQUIPO: OVERRIDE ***
 
+compose file y sirve para personalizar nuestro o hace pequeños cambios en nuestro ambiente
+
+docker-compose.override.yml es un archivo que se encarga de sobreescribir tu configuración de docker-compose.yml , se puede usar para tener segura tu configuración
+y para no guardar los cambios en el repositorio de git.
+
+Un equivalente podría ser los archivos de declaración de variables de entorno, donde hay un archivo .env declarando su nombre y valor, 
+y hay una copia .env.example con solo las variables sin valor. En .gitignore se declara que los cambios en .env no serán guardados, pero mandamos el archivo 
+de ejemplo al repositorio.
+
+Comandos:
+--> touch docker-compose.override.yml (creo el archivo override)
+--> docker-compose up -d (crea los servicios/contenedores)
+--> docker-compose exec app bash (entro al bash del contenedor app)
+--> docker-compose ps (veo los contenedores del compose)
+--> docker-compose up -d --scale app=2 (escalo dos instancias de app, previamente tengo que definir un rango de puertos en el archivo compose)
+--> docker-compose down (borro todo lo creado con compose)
 
 
+Para disponer de múltiples contenedores (escalar) de un mismo servicio, se requiere habilitar un rango de puertos en el host (máquina donde corre Docker), 
+se realiza mediante la instrucción puerto [PUERTO-PUERTO]. Para escalar un servicio se puede usar el flag “–scale” en el comando up:
+
+en el archivo docker-compose.yml en la especificacion de los puertos poner
+  3000-3001:3000
+  
+  
+  --> docker-compose up -d --scale [nameService]=[numberContainers]
+  ejemplo: docker-compose up -d --scale app=2
+  resultado: creado dos docker 
+  
+
+
+*** ADMINISTRANDO TU AMBIENTE DE DOCKER ***
+
+
+  
 
 
 
