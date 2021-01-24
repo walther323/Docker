@@ -945,6 +945,47 @@ Para borrar todas las imagenes existentes:
 
 *** DETENIENDO CONTENEDORES CORRECTAMENTE: SHELL VS EXEC ***
 
+--> docker stop ó kill <looper>
+
+Observacion
+Exited (137) 22 minutes ago
+  mensajes de salidas mayor a 128 es un aviso que el proceso no finalizo de la mejor manera
+  si le restamos a 137 - 128 da 9 --> el programa hizo un kill 9 --> mato el proceso
+  
+  
+Comandos:
+--> docker build -t loop . (construyo la imagen)
+--> docker run -d --name looper loop (corro el contenedor)
+--> docker stop looper (le envía la señal SIGTERM al contenedor)
+--> docker ps -l (muestra el ps del último proceso)
+--> docker kill looper (le envía la señal SIGKILL al contenedor)
+--> docker exec looper ps -ef (veo los procesos del contenedor)
+
+
+Shell: Ejecuta el proceso como hijo del shell
+
+FROM ubuntu:trusty
+COPY ["loop.sh", "/"]
+CMD /loop.sh
+
+Exec: Ejecuta el comando como principal
+
+FROM ubuntu:trusty
+COPY ["loop.sh", "/"]
+CMD ["/loop.sh"]
+
+tener en cuenta
+
+En windows, si estan usando Visual studio Code, y al momento de ejecutar:
+  --> docker run -d --name looper loop
+si no se queda ejecutando el script, puede ser por los codigos de control, que por defecto en 
+visual studio estan en CRLF y debe ser LF para que funcione en windows
+
+
+
+*** CONTENEDORES EJECUTABLES: ENTRYPOINT VS CMD ***
+
+
 
 
 
