@@ -892,6 +892,74 @@ en el archivo docker-compose.yml en la especificacion de los puertos poner
 
 *** ADMINISTRANDO TU AMBIENTE DE DOCKER ***
 
+Comandos:
+--> docker ps -a (veo todos los contenedores de mi máquina)
+--> docker container prune (borra todos los contenedores inactivos)
+--> docker rm -f $(docker ps -aq) (borra todos los contenedores que estén corriendo o apagados)
+--> docker network ls (lista todas las redes)
+--> docker volume ls (lista todos los volumes)
+--> docker image ls (lista todas las imágenes)
+--> docker system prune (borra todo lo que no se esté usando)
+--> docker run -d --name app --memory 1g platziapp (limito el uso de memoria)
+--> docker stats (veo cuantos recursos consume docker en mi sistema)
+--> docker inspect app (puedo ver si el proceso muere por falta de recursos)
+
+#Remove All
+--> sudo docker rm -vf $(sudo docker ps -a -q)
+--> sudo docker rmi -f $(sudo docker images -a -q)
+--> sudo docker system prune -f
+--> sudo docker volume prune -f
+
+# Remove # Remove volumens and images
+--> docker-compose -f production.yml down --volumes --rmi all
+
+# Remove volumens and images
+--> docker-compose -f production.yml down --volumes --rmi all
+
+# Remove Migrations
+--> sudo find . -path "*/migrations/*.py" -not-name "__init__.py" -delete
+--> sudo find . -path "*/migrations/*.pyc" -delete
+
+# Eliminar todos los contenedores que no estan corriendo o apagados
+--> docker container prune
+
+# Eliminar las redes que no estamos usando
+--> docker network prune
+
+# Limito el uso de memoria
+--> docker run -d --name app --memory 1g platziapp
+
+# Ver cuantos recursos consume docker en mi sistema
+--> docker stats
+
+# Ver si el proceso muere por falta de recursos
+--> docker inspect app
+
+Para borrar imagnes no utilizadas:
+--> docker imagen prune
+
+Para borrar todas las imagenes existentes:
+--> docker image rm -f $(docker image ls -qa)
+
+
+
+*** DETENIENDO CONTENEDORES CORRECTAMENTE: SHELL VS EXEC ***
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   
 
