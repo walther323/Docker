@@ -986,23 +986,186 @@ visual studio estan en CRLF y debe ser LF para que funcione en windows
 *** CONTENEDORES EJECUTABLES: ENTRYPOINT VS CMD ***
 
 
+Comandos:
+--> docker buils -t ping . (construyo la imagen)
+--> docker run --name pinger ping <hostname> (ahora le puedo pasar un parámetro, previamente tengo que agregar el ENTRYPOINT en el Dockerfile)
+
+>> cd avanzado/ping
+
+FROM ubuntu:trusty
+CMD ["/bin/ping", "-c", "3","localhost"]
+
+El parametro que enviamos por linea de comandos sobreescribe
+"/bin/ping", "-c", "3","localhost"
+
+FROM ubuntu:trusty
+ENTRYPOINT [ "/bin/ping", "-c", "3"]
+CMD ["localhost"]
+
+De esta manera solo se sobreescribe localhost
+
+-------------------------------------
+otro aporte
+-------------------------------------
+
+cd avanzado/ping
+
+--> nano Dockerfile 
+
+#######Dockerfile#######
+FROM ubuntu:trusty
+CMD ["/bin/ping", "-c", "3", "localhost"]
+########################
+
+--> docker build -t ping .
+--> docker run --name pinger ping
+
+– Como hacemos para tener un contenedor ping, acepte parametros por linea de comando y si no recibe algo, haga algo.
+
+hostname
+
+--> docker run --name pinger ping hostname
+--> nano Dockerfile 
+
+#######Dockerfile#######
+FROM ubuntu:trusty
+ENTRYPOINT ["/bin/ping", "-c", "3"]
+CMD ["localhost"]
+########################
+
+--> docker build -t ping .
+--> docker run --name pinger ping
+--> docker rm pinger
+--> docker run --name pinger google.com
 
 
 
+*** EL CONTEXTO BUILD ***
+
+el concepto de build, cada vez que hacems un build a una image
+docker monta al filesystem temporal los archivos que va a usar para desplegar el sistema
+
+si tengo esto disponible, es un problema, para optimizarlo se realiza lo sgte
+
+
+>> cd platzi/docker
+
+--> nano Dockerfile
+
+########Dockerfile########
+FROM node:14
+COPY [".", "/usr/src/"]
+WORKDIR /usr/src
+RUN npm install
+EXPOSE 3000
+CMD ["node", "index.js"]
+##########################
+
+--> docker build -t prueba .
+--> npm install
+
+– Archivo .dockerignore para que agrege archivos carpetas que no quieres que se considere en el build
+
+nano .dockerignore
+
+########.dockerignore########
+*.log
+.dockerignore
+.git
+.gitignore
+build/*
+Dockerfile
+node_modules
+npm-debug.log*
+README.md
+##########################
+
+--> docker build -t prueba .
+--> docker run -d --rm --name app prueba
+--> docker exec -it app bash
+
+# ls -lac
 
 
 
+*** MULTI-STAGE BUILD ***
+
+en el proyecto docker existe una carpeta con los sgtes archivos
+  development.Dockerfile
+  production.Dockerfile
+
+Cuando no queres que codigo de desarrollo este en la imagen, unicamente queremos que esten archivos de produccion estos pueden ser binarios de ejecucion o en 
+caso de nodejs (index.js, node_modules, package.json y package-lock.json)
+
+--> nano development.Dockerfile
+
+############development.Dockerfile############
+FROM node:12
+COPY ["package.json", "package-lock.json", "/usr/src/"]
+WORKDIR /usr/src
+RUN npm install
+COPY [".", "/usr/src/"]
+EXPOSE 3000
+CMD ["npx", "nodemon", "index.js"]
+################################################
+
+--> nano build/production.Dockerfile
+
+############production.Dockerfile############
+FROM node:12 as builder
+COPY ["package.json", "package-lock.json", "/usr/src/"]
+WORKDIR /usr/src
+RUN npm install --only=production
+COPY [".", "/usr/src/"]
+RUN npm install --only=development
+RUN npm run test
+
+# Productive image
+FROM node:12
+COPY ["package.json", "package-lock.json", "/usr/src/"]
+WORKDIR /usr/src
+RUN npm install --only=production
+COPY --from=builder ["/usr/src/index.js", "/usr/src/"]
+EXPOSE 3000
+CMD ["node", "index.js"]
+################################################
+
+--> docker build -t prodapp -f build/production.Dockerfile . (por default se va al dockerfile de la raiz, se debe especificar cual se quiere cargar)
+--> docker image ls
+--> docker run -d --name prod prodapp 
+--> docker exec -it prod bash
+
+# ls -lac
+# docker ps
+# exit
+
+– Experimentamos editando el archivo test/test.js para que falle, comprobamos que fallara el layer falla y se detiene el build
+
+docker build -t prodapp -f build/production.Dockerfile .
 
 
 
+*** DOCKER IN DOCKER ***
+
+
+Comandos:
+--> docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock docker:19.03.12
+--> docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock -v $(wich docker):/bin/docker wagoodman/dive:latest prodapp
+
+
+Si queremos tener docker dentro de un contenedor, mas llamado docker-in-docker. Compartiendo el socket de nuestro local a nuestro contenedor que tendra docker.
+
+--> docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock docker:19.03.12 
+# docker ps
+# docker run -d --name app prodapp
+
+– Comprobamos desde otra terminal
+--> docker ps
+
+– Correr dive siendo un contenedor que explora el estado de docker.
+--> docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock -v $(which docker):/bin/docker wagoodman/dive:latest prodapp
 
 
 
-
-
-
-
-  
-
-
+------- cierre del curso -------
 
